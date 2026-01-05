@@ -1,5 +1,12 @@
+.container{
+   display: flex;
+   flex-direction: column;
+   padding: 2rem;
+}
+
 .fil-col {
-   width: 100%;
+   margin: auto;
+   width: 80%;
 }
 
 .div-button {
