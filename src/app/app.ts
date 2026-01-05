@@ -1,12 +1,42 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute, Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { CardHeader } from "./commons/components/card-header/card-header";
+import { map, filter, Subscription } from 'rxjs';
+import { MenuBar } from './commons/components/menu-bar/menu-bar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CardHeader, MenuBar],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('barber-shop-ui');
+export class App implements OnInit, OnDestroy{
+  title = ('barber-shop-ui');
+
+  private routeSubscription?: Subscription;
+
+  constructor(
+    private readonly router: Router, 
+    private readonly activatedRoute: ActivatedRoute) { }
+
+  ngOnInit(): void {
+    this.routeSubscription =this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(() => this.getRouteTitle(this.activatedRoute))
+    ).subscribe(title => this.title = title);
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSubscription){
+      this.routeSubscription.unsubscribe();
+    }
+  }
+
+    private getRouteTitle(route: ActivatedRoute): string {
+    let child = route;
+    while (child.firstChild) {
+      child = child.firstChild;
+    }
+    return child.snapshot.data['title'] || 'Barber-Shop-ui';
+  }
 }
