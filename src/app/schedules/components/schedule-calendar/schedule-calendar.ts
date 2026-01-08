@@ -78,10 +78,14 @@ export class ScheduleCalendar implements OnDestroy, AfterViewInit, OnChanges {
   }
 
   set selected(selected: Date) {
-    if (this._selected.getTime() !== selected.getTime()) {
-      this.onDateChange.emit(selected)
-      this.buildTable()
-      this._selected = selected
+    this._selected = selected;
+    this.onDateChange.emit(selected);
+    this.buildTable();
+  }
+
+  onDateSelected(date: Date | null) {
+    if (date) {
+    this.selected = date;
     }
   }
 
@@ -96,17 +100,20 @@ export class ScheduleCalendar implements OnDestroy, AfterViewInit, OnChanges {
       this.dataSource.paginator = this.paginator
     }
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['monthSchedule'] && this.monthSchedule) {
       this.buildTable()
     }
   }
-
+  
   onSubmit(form: NgForm) {
-    const startAt = new Date(this._selected)
-    const endAt = new Date(this._selected)
-    startAt.setHours(this.newSchedule.startAt!.getHours(), this.newSchedule.startAt!.getMinutes())
-    endAt.setHours(this.newSchedule.endAt!.getHours(), this.newSchedule.endAt!.getMinutes())
+    // Mantemos o cálculo das datas conforme seu padrão
+    const startAt = new Date(this._selected);
+    const endAt = new Date(this._selected);
+    startAt.setHours(this.newSchedule.startAt!.getHours(), this.newSchedule.startAt!.getMinutes());
+    endAt.setHours(this.newSchedule.endAt!.getHours(), this.newSchedule.endAt!.getMinutes());
+
     const saved: ClientScheduleAppointmentModel = {
       id: -1,
       day: this._selected.getDate(),
@@ -114,12 +121,17 @@ export class ScheduleCalendar implements OnDestroy, AfterViewInit, OnChanges {
       endAt,
       clientId: this.newSchedule.clientId!,
       clientName: this.clients.find(c => c.id === this.newSchedule.clientId!)!.name
-    }
-    this.monthSchedule.scheduledAppointments.push(saved)
-    this.onScheduleClient.emit(saved)
-    this.buildTable()
-    form.resetForm()
-    this.newSchedule = { startAt: undefined, endAt: undefined, clientId: undefined }
+    };
+
+    // ✅ REMOVIDO: this.monthSchedule.scheduledAppointments.push(saved)
+    // ✅ REMOVIDO: this.buildTable()
+
+    // Emitimos o evento para o pai realizar o POST
+    this.onScheduleClient.emit(saved);
+
+    // Mantemos o reset do formulário
+    form.resetForm();
+    this.newSchedule = { startAt: undefined, endAt: undefined, clientId: undefined };
   }
 
   requestDelete(schedule: ClientScheduleAppointmentModel) {

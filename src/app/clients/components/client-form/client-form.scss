@@ -1,17 +1,16 @@
-.container{
-   display: flex;
-   flex-direction: column;
+.container {
+   max-width: 600px;
+   margin: 0 auto;
    padding: 2rem;
 }
 
 .fil-col {
-   margin: auto;
-   width: 80%;
+   width: 100%;
+   margin-bottom: 1rem;
 }
 
 .div-button {
-   padding-top: 2rem;
+   margin-top: 1.5rem;
    display: flex;
    justify-content: center;
-   align-items: center;
 }

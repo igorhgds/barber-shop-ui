@@ -37,9 +37,11 @@ export class SchedulesMonth implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.fetchSchedules(new Date());
-    this.subscriptions.push(this.clientHttpService.list().subscribe(data => this.clients = data))
-  }
+  const today = new Date();
+  this.selectedDate = today;
+  this.fetchSchedules(today);
+  this.subscriptions.push(this.clientHttpService.list().subscribe(data => this.clients = data));
+}
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe())
@@ -56,13 +58,29 @@ export class SchedulesMonth implements OnInit, OnDestroy {
 
   onScheduleClient(schedule: SaveScheduleModel) {
     if (schedule.startAt && schedule.endAt && schedule.clientId) {
-      const request: SaveScheduleRequest = { startAt: schedule.startAt, endAt: schedule.endAt, clientId: schedule.clientId }
-      this.subscriptions.push(this.httpService.save(request).subscribe(() => {
-        this.snackbarManage.show('Agendamento realizado com sucesso')
-        if (this.selectedDate) {
-          this.fetchSchedules(this.selectedDate)
-        }
-      }))
+      const request: SaveScheduleRequest = { 
+        startAt: schedule.startAt, 
+        endAt: schedule.endAt, 
+        clientId: schedule.clientId 
+      };
+
+      this.subscriptions.push(
+        this.httpService.save(request).subscribe({
+          next: () => {
+            // Só entra aqui se o Backend salvar com sucesso (Status 201)
+            this.snackbarManage.show('Agendamento realizado com sucesso');
+            if (this.selectedDate) {
+              this.fetchSchedules(this.selectedDate); // Atualiza a lista com o dado real
+            }
+          },
+          error: (err) => {
+            // Captura a mensagem "Já Existe um cliente agendado..." do seu log
+            const message = err.error?.message || 'Erro ao realizar agendamento';
+            this.snackbarManage.show(message);
+            // A lista permanece intacta porque o fetchSchedules não foi chamado
+          }
+        })
+      );
     }
   }
 

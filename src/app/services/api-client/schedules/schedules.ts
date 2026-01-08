@@ -23,7 +23,7 @@ export class SchedulesService implements ISchedulesService {
    }
 
    listInMonth(year: number, month: number): Observable<ScheduleAppointmentMonthResponse> {
-      return this.http.get<ScheduleAppointmentMonthResponse>(`${this.basePath}schedules/appointments/month/${year}/${month}`);
+      return this.http.get<ScheduleAppointmentMonthResponse>(`${this.basePath}schedules/${year}/${month}`);
    }
 }
   

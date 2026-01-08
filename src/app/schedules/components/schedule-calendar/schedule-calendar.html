@@ -1,9 +1,9 @@
-<div class="container">
+<div class="container mt-4">
     <div class="row">
-
         <div class="col-12">
-            <form #form="ngForm" (ngSubmit)="onSubmit(form)" class="container">
-                <div class="row">
+            <form #form="ngForm" (ngSubmit)="onSubmit(form)" class="card p-3 shadow-sm">
+                <div class="row align-items-center">
+
                     <div class="col-4">
                         <mat-form-field>
                             <mat-label>Inicio</mat-label>
@@ -24,20 +24,20 @@
                             <mat-timepicker-toggle [for]="endAtPicker" matSuffix />
                         </mat-form-field>
                     </div>
-                    <div class="col-3">
-                        <mat-form-field>
-                            <mat-label>Selecione o client</mat-label>
-                            <mat-select name="clientId" id="clientId" #clientIdModel="ngModel"
-                                [(ngModel)]="newSchedule.clientId" required>
+
+                    <div class="col-md-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Selecione o cliente</mat-label>
+                            <mat-select name="clientId" [(ngModel)]="newSchedule.clientId" required>
                                 <mat-option *ngFor="let client of clients" [value]="client.id">
                                     {{client.name}}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-1">
-                        <button type="submit" mat-mini-fab extended matTooltip="incluir agendamento no dia"
-                            [disabled]="form.invalid">
+
+                    <div class="col-md-2 text-center">
+                        <button type="submit" mat-fab color="primary" [disabled]="form.invalid" matTooltip="Salvar agendamento">
                             <mat-icon>add</mat-icon>
                         </button>
                     </div>
@@ -45,23 +45,24 @@
             </form>
         </div>
     </div>
-    <div class="row">
-        <div class="col-6">
-            <mat-card class="calendar-card">
-                <mat-calendar [(selected)]="selected"></mat-calendar>
+
+    <div class="row mt-4">
+        <div class="col-md-5">
+            <mat-card>
+                <mat-calendar [selected]="selected" (selectedChange)="onDateSelected($event)"></mat-calendar>
             </mat-card>
         </div>
-        <div class="col-6">
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
+        <div class="col-md-7">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 w-100">
                 <ng-container matColumnDef="startAt">
-                    <th mat-header-cell *matHeaderCellDef>Inicio</th>
-                    <td mat-cell *matCellDef="let schedule">{{schedule.startAt | date:'HH:mm a'}}</td>
+                    <th mat-header-cell *matHeaderCellDef>Início</th>
+                    <td mat-cell *matCellDef="let schedule">{{schedule.startAt | date:'HH:mm'}}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="endAt">
                     <th mat-header-cell *matHeaderCellDef>Término</th>
-                    <td mat-cell *matCellDef="let schedule">{{schedule.endAt | date:'HH:mm a'}}</td>
+                    <td mat-cell *matCellDef="let schedule">{{schedule.endAt | date:'HH:mm'}}</td>
                 </ng-container>
 
                 <ng-container matColumnDef="client">
@@ -72,7 +73,7 @@
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef>Ações</th>
                     <td mat-cell *matCellDef="let schedule">
-                        <button mat-mini-fab extended matTooltip="excluir" (click)="requestDelete(schedule)">
+                        <button mat-icon-button color="warn" (click)="requestDelete(schedule)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </td>
@@ -81,7 +82,7 @@
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[3, 6, 9]" showFirstLastButton></mat-paginator>
+            <mat-paginator [pageSizeOptions]="[5, 10]" showFirstLastButton></mat-paginator>
         </div>
     </div>
 </div>
